@@ -3,7 +3,9 @@
 
 ## 📘 Project Overview
 
-This project showcases a real-world end-to-end **Azure Data Engineering** solution that automates the validation, processing, and transformation of **daily order data** from multiple third-party sources. The goal is to generate business insights showing **how many orders are placed and how much is spent by each customer**.
+This project showcases a real-world end-to-end **Azure Data Engineering** solution that automates the validation, processing, and transformation of **daily order data** from multiple third-party sources using Azure Data Factory, Databricks, and Azure SQL Database. The primary business requirement is to generate insights about:
+
+✅ How many orders are placed by each customer and how much they have spent.
 
 ---
 
