@@ -1,0 +1,28 @@
+{
+	"name": "adls_trigger_cp",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_datavalidation_cp",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"filename": "@triggerBody().filename"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/sales/blobs/landing",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/18c90322-414a-4c20-b6ce-6f95fc74f662/resourceGroups/capstone-sales-project/providers/Microsoft.Storage/storageAccounts/cpsalesstorage",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

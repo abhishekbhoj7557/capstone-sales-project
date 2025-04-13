@@ -1,0 +1,11 @@
+{
+	"name": "ls_AzureKeyVault_cp",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://cp-sales-secretekey.vault.azure.net/"
+		}
+	}
+}

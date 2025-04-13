@@ -1,0 +1,24 @@
+{
+	"name": "ls_AzureSqlDatabase_cp",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "cpdatabase.database.windows.net",
+			"database": "cpdatabase",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "cpproject",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ls_AzureKeyVault_cp",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "SQLcredentials"
+			}
+		}
+	}
+}

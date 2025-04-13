@@ -1,0 +1,49 @@
+{
+	"name": "ds_adls_cp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_ADLSGen2_cp",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "order_items",
+				"fileSystem": "sales"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "order_item_id",
+				"type": "String"
+			},
+			{
+				"name": "order_item_order_id",
+				"type": "String"
+			},
+			{
+				"name": "order_item_product_id",
+				"type": "String"
+			},
+			{
+				"name": "order_item_quantity",
+				"type": "String"
+			},
+			{
+				"name": "order_item_subtotal",
+				"type": "String"
+			},
+			{
+				"name": "order_item_product_price",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

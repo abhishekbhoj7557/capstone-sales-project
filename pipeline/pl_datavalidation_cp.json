@@ -1,0 +1,151 @@
+{
+	"name": "pl_datavalidation_cp",
+	"properties": {
+		"activities": [
+			{
+				"name": "validationNotebook_cp",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "copydatafromS3toADLS",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/abhishek.bhoj2301@outlook.com/cp-sales-logic-notebook",
+					"baseParameters": {
+						"filename": {
+							"value": "@pipeline().parameters.filename",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_AzureDatabricks_cp",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "copydatafromS3toADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AmazonS3ReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['order_item_id']"
+								},
+								"sink": {
+									"name": "order_item_id"
+								}
+							},
+							{
+								"source": {
+									"path": "$['order_item_order_id']"
+								},
+								"sink": {
+									"name": "order_item_order_id"
+								}
+							},
+							{
+								"source": {
+									"path": "$['order_item_product_id']"
+								},
+								"sink": {
+									"name": "order_item_product_id"
+								}
+							},
+							{
+								"source": {
+									"path": "$['order_item_quantity']"
+								},
+								"sink": {
+									"name": "order_item_quantity"
+								}
+							},
+							{
+								"source": {
+									"path": "$['order_item_subtotal']"
+								},
+								"sink": {
+									"name": "order_item_subtotal"
+								}
+							},
+							{
+								"source": {
+									"path": "$['order_item_product_price']"
+								},
+								"sink": {
+									"name": "order_item_product_price"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_S3_cp",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_adls_cp",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-04-13T15:02:54Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

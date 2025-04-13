@@ -1,0 +1,9 @@
+{
+	"name": "capstone-sales-project-DF",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "2b1bcc59-520c-4cb7-a343-3b27ebcb6a0f",
+		"tenantId": "f770c095-60bd-496a-a490-12fce3a9ab7a"
+	}
+}
