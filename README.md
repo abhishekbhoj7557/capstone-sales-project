@@ -164,7 +164,9 @@ azure-data-pipeline/
 ```
 
 ---
-
+> **Note:**  
+> As this represents my first data engineering project, I have not yet incorporated advanced optimization techniques, particularly in the areas of PySpark performance tuning, pipeline efficiency, and query optimization. I welcome any constructive feedback or expert recommendations to further enhance the scalability, performance, and overall efficiency of the pipeline.
+ 
 ## 📌 Conclusion
 
 This project demonstrates an automated and scalable pipeline using Azure services and Databricks, focused on validating and transforming order data to provide customer-level sales insights.
