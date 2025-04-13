@@ -1,0 +1,465 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "capstone-sales-project-DF"
+        },
+        "ls_ADLSGen2_cp_accountKey": {
+            "type": "secureString",
+            "metadata": "Secure string for 'accountKey' of 'ls_ADLSGen2_cp'"
+        },
+        "ls_ADLSGen2_cp_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://cpsalesstorage.dfs.core.windows.net/"
+        },
+        "ls_AzureKeyVault_cp_properties_typeProperties_baseUrl": {
+            "type": "string",
+            "defaultValue": "https://cp-sales-secretekey.vault.azure.net/"
+        },
+        "ls_AzureDatabricks_cp_properties_typeProperties_existingClusterId": {
+            "type": "string",
+            "defaultValue": "0413-141126-7b5w6x65"
+        },
+        "ls_AzureSqlDatabase_cp_properties_typeProperties_server": {
+            "type": "string",
+            "defaultValue": "cpdatabase.database.windows.net"
+        },
+        "ls_AzureSqlDatabase_cp_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "cpdatabase"
+        },
+        "ls_AzureSqlDatabase_cp_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "cpproject"
+        },
+        "ls_AmazonS3_cp_properties_typeProperties_accessKeyId": {
+            "type": "object",
+            "defaultValue": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "ls_AzureKeyVault_cp",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "AWS-Access-key-id"
+            }
+        },
+        "adls_trigger_cp_properties_pl_datavalidation_cp_parameters_filename": {
+            "type": "string",
+            "defaultValue": "@triggerBody().filename"
+        },
+        "adls_trigger_cp_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/18c90322-414a-4c20-b6ce-6f95fc74f662/resourceGroups/capstone-sales-project/providers/Microsoft.Storage/storageAccounts/cpsalesstorage"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_ADLSGen2_cp')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "[parameters('ls_ADLSGen2_cp_properties_typeProperties_url')]",
+                    "accountKey": {
+                        "type": "SecureString",
+                        "value": "[parameters('ls_ADLSGen2_cp_accountKey')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_AzureKeyVault_cp')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureKeyVault",
+                "typeProperties": {
+                    "baseUrl": "[parameters('ls_AzureKeyVault_cp_properties_typeProperties_baseUrl')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_AzureDatabricks_cp')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureDatabricks",
+                "typeProperties": {
+                    "domain": "https://adb-65239668787578.18.azuredatabricks.net",
+                    "accessToken": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "ls_AzureKeyVault_cp",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "databrickssecrete"
+                    },
+                    "existingClusterId": "[parameters('ls_AzureDatabricks_cp_properties_typeProperties_existingClusterId')]"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_AzureKeyVault_cp')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_AzureSqlDatabase_cp')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "server": "[parameters('ls_AzureSqlDatabase_cp_properties_typeProperties_server')]",
+                    "database": "[parameters('ls_AzureSqlDatabase_cp_properties_typeProperties_database')]",
+                    "encrypt": "mandatory",
+                    "trustServerCertificate": false,
+                    "authenticationType": "SQL",
+                    "userName": "[parameters('ls_AzureSqlDatabase_cp_properties_typeProperties_userName')]",
+                    "password": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "ls_AzureKeyVault_cp",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "SQLcredentials"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_AzureKeyVault_cp')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_AmazonS3_cp')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AmazonS3",
+                "typeProperties": {
+                    "serviceUrl": "https://s3.amazonaws.com",
+                    "accessKeyId": "[parameters('ls_AmazonS3_cp_properties_typeProperties_accessKeyId')]",
+                    "secretAccessKey": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "ls_AzureKeyVault_cp",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "AWS-Secret-accesskey"
+                    },
+                    "authenticationType": "AccessKey"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_AzureKeyVault_cp')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/adls_trigger_cp')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "pl_datavalidation_cp",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "filename": "[parameters('adls_trigger_cp_properties_pl_datavalidation_cp_parameters_filename')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/sales/blobs/landing",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('adls_trigger_cp_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/pipelines/pl_datavalidation_cp')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/pl_datavalidation_cp')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "validationNotebook_cp",
+                        "type": "DatabricksNotebook",
+                        "dependsOn": [
+                            {
+                                "activity": "copydatafromS3toADLS",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "notebookPath": "/Users/abhishek.bhoj2301@outlook.com/cp-sales-logic-notebook",
+                            "baseParameters": {
+                                "filename": {
+                                    "value": "@pipeline().parameters.filename",
+                                    "type": "Expression"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "ls_AzureDatabricks_cp",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "copydatafromS3toADLS",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "JsonSource",
+                                "storeSettings": {
+                                    "type": "AmazonS3ReadSettings",
+                                    "recursive": true,
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "JsonReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "DelimitedTextSink",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSWriteSettings"
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextWriteSettings",
+                                    "quoteAllText": true,
+                                    "fileExtension": ".csv"
+                                }
+                            },
+                            "enableStaging": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "path": "$['order_item_id']"
+                                        },
+                                        "sink": {
+                                            "name": "order_item_id"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "path": "$['order_item_order_id']"
+                                        },
+                                        "sink": {
+                                            "name": "order_item_order_id"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "path": "$['order_item_product_id']"
+                                        },
+                                        "sink": {
+                                            "name": "order_item_product_id"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "path": "$['order_item_quantity']"
+                                        },
+                                        "sink": {
+                                            "name": "order_item_quantity"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "path": "$['order_item_subtotal']"
+                                        },
+                                        "sink": {
+                                            "name": "order_item_subtotal"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "path": "$['order_item_product_price']"
+                                        },
+                                        "sink": {
+                                            "name": "order_item_product_price"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "ds_S3_cp",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "ds_adls_cp",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "lastPublishTime": "2025-04-13T15:02:54Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_AzureDatabricks_cp')]",
+                "[concat(variables('factoryId'), '/datasets/ds_S3_cp')]",
+                "[concat(variables('factoryId'), '/datasets/ds_adls_cp')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_adls_cp')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_ADLSGen2_cp",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "order_items",
+                        "fileSystem": "sales"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "order_item_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "order_item_order_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "order_item_product_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "order_item_quantity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "order_item_subtotal",
+                        "type": "String"
+                    },
+                    {
+                        "name": "order_item_product_price",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_ADLSGen2_cp')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_S3_cp')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_AmazonS3_cp",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "Json",
+                "typeProperties": {
+                    "location": {
+                        "type": "AmazonS3Location",
+                        "bucketName": "salescpproject",
+                        "folderPath": "order_items",
+                        "fileName": "order_items.json"
+                    }
+                },
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "order_item_id": {
+                            "type": "integer"
+                        },
+                        "order_item_order_id": {
+                            "type": "integer"
+                        },
+                        "order_item_product_id": {
+                            "type": "integer"
+                        },
+                        "order_item_quantity": {
+                            "type": "integer"
+                        },
+                        "order_item_subtotal": {
+                            "type": "number"
+                        },
+                        "order_item_product_price": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_AmazonS3_cp')]"
+            ]
+        }
+    ]
+}
