@@ -12,13 +12,13 @@ This project is designed to automate the ingestion, validation, and processing o
 ## 🚀 End-to-End Workflow
 
 1. **Order Data Ingestion**
-   - A third-party system ingest `.csv` files daily in the **ADLS Gen2** landing zone.
+   - A third-party system ingest order related `.csv` files daily in the **ADLS Gen2** landing zone.
 
 2. **Trigger Execution**
-   - Arrival of new files triggers an **Azure Data Factory pipeline**.
+   - Arrival of new files triggers an **Azure Data Factory pipeline** and dynamically filename will pass to Pipeline.
 
 3. **Copy Activity**
-   - The pipeline copies `order_items` data (in JSON format) from **Amazon S3** to **ADLS Gen2** (`DelimitedText` format).
+   - The pipeline copies `order_items` data (in `json` format) from **Amazon S3** to **ADLS Gen2** (`DelimitedText` format).
 
 4. **Data Validation in Databricks**
    - Validates the CSV orders file:
@@ -100,20 +100,17 @@ ORDER BY
 
 | Type             | Name                      | Format        |
 |------------------|---------------------------|---------------|
-| ADLS Gen2        | `ls_ADLSGen2_cp`          | CSV      |
+| ADLS Gen2        | `ls_ADLSGen2_cp`          | CSV           |
 | Amazon S3        | `ls_AmazonS3_cp`          | JSON          |
 | Azure Databricks | `ls_AzureDatabricks_cp`   | N/A           |
 | Azure SQL DB     | `ls_AzureSqlDatabase_cp`  | Tabular       |
 | Key Vault        | `ls_AzureKeyVault_cp`     | Secrets Mgmt  |
 
----
-
 ## 🔎 Databricks Integration
 
 - **Workspace:** `capstone-sales-project-databricks-ws`
 - **Cluster:** `cp-databricks-cluster`
-- **Notebook:** `cp-sales-logic-notebook`
-- **Notebook Logic:** `pl_databrick_cp`
+- **Notebook Name:** `cp-sales-logic-notebook`
 - **Notebook Pipeline:** `pl_databrick_notebook_cp`
 - **Scope Name:** `DatabricksScope`
 
