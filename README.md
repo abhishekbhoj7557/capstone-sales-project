@@ -15,7 +15,7 @@ This project is designed to automate the ingestion, validation, and processing o
    - A third-party system ingest order related `.csv` files daily in the **ADLS Gen2** landing zone.
 
 2. **Trigger Execution**
-   - Arrival of new files triggers an **Azure Data Factory pipeline** and dynamically filename will pass to Pipeline.
+   - Arrival of new files triggers an **Azure Data Factory pipeline** and dynamically filename will pass to Pipeline from trigger Body.
 
 3. **Copy Activity**
    - The pipeline copies `order_items` data (in `json` format) from **Amazon S3** to **ADLS Gen2** (`DelimitedText` format).
