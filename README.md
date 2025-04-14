@@ -83,7 +83,7 @@ ORDER BY
 - **Pipeline:** `pl_datavalidation_cp`
   - Activities:
     - `copydatafromS3toADLS`
-    - `Run validationNotebook_cp`
+    - `validationNotebook_cp`
 - **Trigger:** `adls_trigger_cp`
 
 ### 🔒 Azure Key Vault
