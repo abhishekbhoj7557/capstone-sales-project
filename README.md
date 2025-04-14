@@ -177,4 +177,4 @@ url = "jdbc:sqlserver://{}.database.windows.net:{};database={};user={};encrypt=t
 ```
 
 ---
-As this represents my first data engineering project, I have not yet incorporated advanced optimization techniques, particularly in the areas of PySpark performance tuning 🐍, pipeline efficiency 🚀, and query optimization ⚡. I welcome any constructive feedback or expert recommendations to further enhance the scalability, performance, and overall efficiency of the pipeline 🔧.
+**As this represents my first data engineering project, I have not yet incorporated advanced optimization techniques, particularly in the areas of PySpark performance tuning 🐍, pipeline efficiency 🚀, and query optimization ⚡. I welcome any constructive feedback or expert recommendations to further enhance the scalability, performance, and overall efficiency of the pipeline 🔧.**
