@@ -12,7 +12,7 @@ This project is designed to automate the ingestion, validation, and processing o
 ## 🚀 End-to-End Workflow
 
 1. **Order Data Ingestion**
-   - A third-party system drops `.csv` files daily in the **ADLS Gen2** landing zone.
+   - A third-party system ingest `.csv` files daily in the **ADLS Gen2** landing zone.
 
 2. **Trigger Execution**
    - Arrival of new files triggers an **Azure Data Factory pipeline**.
@@ -100,7 +100,7 @@ ORDER BY
 
 | Type             | Name                      | Format        |
 |------------------|---------------------------|---------------|
-| ADLS Gen2        | `ls_ADLSGen2_cp`          | JSON/CSV      |
+| ADLS Gen2        | `ls_ADLSGen2_cp`          | CSV      |
 | Amazon S3        | `ls_AmazonS3_cp`          | JSON          |
 | Azure Databricks | `ls_AzureDatabricks_cp`   | N/A           |
 | Azure SQL DB     | `ls_AzureSqlDatabase_cp`  | Tabular       |
